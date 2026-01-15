@@ -11,9 +11,7 @@ func TestUserCanBorrowWhenAllConditionsMet(t *testing.T) {
 	service := loan.NewLoanEligibilityService()
 
 	// Create Value Objects
-	userId, _ := user.NewUserId("user-123")
-	email, _ := user.NewEmail("john@example.com")
-	u, _ := user.NewUser(userId, "John Doe", email, 0, false)
+	u := user.NewUser("John Doe", "john@example.com")
 	
 	bookId, _ := book.NewBookId("book-456")
 	isbn, _ := book.NewISBN("9780134494166")
@@ -28,10 +26,12 @@ func TestUserCannotBorrowWhenMaxLoansReached(t *testing.T) {
 	service := loan.NewLoanEligibilityService()
 
 	// Create Value Objects
-	userId, _ := user.NewUserId("user-123")
-	email, _ := user.NewEmail("john@example.com")
-	u, _ := user.NewUser(userId, "John Doe", email, 5, false)
+	u := user.NewUser("John Doe", "john@example.com")
 	
+	for i := 0; i < user.MaxBorrowLimit; i++ {
+		u, _ = u.BorrowBook()
+	}
+
 	bookId, _ := book.NewBookId("book-456")
 	isbn, _ := book.NewISBN("9780134494166")
 	b, _ := book.NewBook(bookId, "Clean Architecture", "Robert Martin", isbn, 3)

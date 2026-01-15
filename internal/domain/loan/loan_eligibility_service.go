@@ -15,12 +15,12 @@ func NewLoanEligibilityService() *LoanEligibilityService {
 
 func (s *LoanEligibilityService) CanBorrow(u *user.User, b *book.Book) bool {
   // Rule 1: User must not have reached max loan limit
-  if !u.CanBorrowMore() {
+  if !u.CanBorrow() {
     return false
   }
 
   // Rule 2: User must not have overdue books
-  if u.HasOverdueBooks() {
+  if u.OverdueFees() > 0 {
     return false
   }
 
@@ -33,12 +33,12 @@ func (s *LoanEligibilityService) CanBorrow(u *user.User, b *book.Book) bool {
 }
 
 func (s *LoanEligibilityService) GetIneligibilityReason(u *user.User, b *book.Book) *string {
-  if !u.CanBorrowMore() {
-    reason := fmt.Sprintf("User has reached maximum loan limit (%d books)", u.GetMaxLoans())
+  if !u.CanBorrow() {
+    reason := fmt.Sprintf("User has reached maximum loan limit (%d books)", user.MaxBorrowLimit)
     return &reason
   }
 
-  if u.HasOverdueBooks() {
+  if u.OverdueFees() > 0 {
     reason := "User has overdue books"
     return &reason
   }
